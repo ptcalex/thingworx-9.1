@@ -35,34 +35,51 @@ $openssl_url = "http://wiki.overbyte.eu/arch/openssl-${openssl_version}-win64.zi
 
 
 # Download Java 11
-Invoke-WebRequest -Uri $jdk_url -OutFile jdk.zip #
-Expand-Archive jdk.zip -DestinationPath . #
-Remove-Item jdk.zip #
+$jdkCount = (Get-ChildItem -Path . -Filter "jdk*").Length
+if ($jdkCount -eq 0) {
+  Write-Output "Downloading and installing JDK..."
+  Invoke-WebRequest -Uri $jdk_url -OutFile jdk.zip
+  Expand-Archive jdk.zip -DestinationPath .
+  Remove-Item jdk.zip
+} else {
+  Write-Output "JDK already installed, skipping..."
+}
 $jdk_folder = Resolve-Path -Path (Get-ChildItem -Path . -Filter "jdk*").Name
 $jdk_base_folder = (Get-ChildItem -Path . -Filter "jdk*").Name
 
 
 # Download Tomcat9
-Invoke-WebRequest -Uri $tomcat9_url -OutFile tomcat.zip #
-Expand-Archive tomcat.zip -DestinationPath . #
-Remove-Item tomcat.zip #
+$tomcatCount = (Get-ChildItem -Path . -Filter "apache-tomcat-*").Length
+if ($tomcatCount -eq 0) {
+  Write-Output "Downloading and installing Tomcat..."
+  Invoke-WebRequest -Uri $tomcat9_url -OutFile tomcat.zip
+  Expand-Archive tomcat.zip -DestinationPath .
+  Remove-Item tomcat.zip
+} else {
+  Write-Output "Tomcat already installed, skipping..."
+}
 $tomcat_folder = Resolve-Path -Path (Get-ChildItem -Path . -Filter "apache*").Name
 
 
 # Download OpenSSL
-Invoke-WebRequest -Uri $openssl_url -OutFile openssl.zip #
-Expand-Archive openssl.zip -DestinationPath openssl #
-Remove-Item openssl.zip #
-Write-Output "Verify the authenticity of $pwd\openssl\openssl.exe by ensuring it is digitally signed by François PIETTE, then press ENTER to continue"
-Pause
+$opensslCount = (Get-ChildItem -Path . -Filter "openssl*").Length
+if ($opensslCount -eq 0) {
+  Write-Output "Downloading and installing OpenSSL..."
+  Invoke-WebRequest -Uri $openssl_url -OutFile openssl.zip #
+  Expand-Archive openssl.zip -DestinationPath openssl #
+  Remove-Item openssl.zip #
+  Write-Output "Verify the authenticity of $pwd\openssl\openssl.exe by ensuring it is digitally signed by François PIETTE, then press ENTER to continue"
+  Pause
 
-
-# Create key and certificate
-Push-Location openssl
-& ".\openssl.exe" genpkey -algorithm RSA -out thingworx.key -pkeyopt rsa_keygen_bits:2048
-& ".\openssl.exe" rsa -pubout -in thingworx.key -out thingworx.pub
-& ".\openssl.exe" req -x509 -key thingworx.key -out thingworx.crt -days $ssl_days -subj "/C=$ssl_country/O=$ssl_org/CN=$ssl_host" -addext "subjectAltName=DNS:$ssl_host"
-Pop-Location
+  # Create key and certificate
+  Push-Location openssl
+  & ".\openssl.exe" genpkey -algorithm RSA -out thingworx.key -pkeyopt rsa_keygen_bits:2048
+  & ".\openssl.exe" rsa -pubout -in thingworx.key -out thingworx.pub
+  & ".\openssl.exe" req -x509 -key thingworx.key -out thingworx.crt -days $ssl_days -subj "/C=$ssl_country/O=$ssl_org/CN=$ssl_host" -addext "subjectAltName=DNS:$ssl_host"
+  Pop-Location
+} else {
+  Write-Output "OpenSSL already installed, skipping..."
+}
 
 
 # Generate batch file to run ThingWorx from a Command Prompt console
@@ -76,6 +93,8 @@ pushd %THINGWORX_PLATFORM_SETTINGS%
 call %CATALINA_HOME%\bin\catalina.bat run
 popd
 "@ | Out-File console-start-thingworx.bat
+
+Write-Output "console-start-thingworx.bat created."
 
 
 # Generate PowerShell script to run ThingWorx from a PowerShell console
@@ -93,3 +112,6 @@ Push-Location `$thingworx_platform_settings
 Pop-Location
 "@ | Out-File console-start-thingworx.ps1
 
+Write-Output "console-start-thingworx.ps1 created."
+
+Write-Output "DONE!"
