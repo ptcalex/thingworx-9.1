@@ -1,0 +1,39 @@
+{
+    "PlatformSettingsConfig": {
+        "BasicSettings": {
+            "Storage": "ThingWorxStorage",
+            "BackupStorage": "ThingWorxBackupStorage",
+            "HTTPRequestHeaderMaxLength": 20000,
+            "HTTPRequestParameterMaxLength": 20000,
+            "ScriptTimeout": 600
+        },
+
+        "AdministratorUserSettings": {
+            "InitialPassword": "change-me-please"
+        },
+
+        "ContentTypeSettings": {
+            "supportedMediaEntityContentTypes": [ "image/svg+xml", "image/png", "image/gif", "image/bmp", "image/jpeg", "application/pdf", "image/vnd.microsoft.icon" ]
+        },
+
+        "ExtensionPackageImportPolicy": {
+            "importEnabled": true,
+            "allowJarResources": true,
+            "allowJavascriptResources": true,
+            "allowCSSResources": true,
+            "allowJSONResources": true,
+            "allowWebAppResources": true,
+            "allowEntities": true,
+            "allowExtensibleEntities": true
+        }
+    },
+
+    "PersistenceProviderPackageConfigs": {
+        "H2PersistenceProviderPackage": {
+            "ConnectionInformation": {
+                "username": "twadmin",
+                "password": "change-me-please"
+          }
+	    }
+    }
+}

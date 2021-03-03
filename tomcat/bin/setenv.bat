@@ -1,0 +1,1 @@
+set CATALINA_OPTS=-Dserver -Dd64 -XX:+UseG1GC -Dfile.encoding=UTF-8 -Djava.library.path=%CATALINA_BASE%\webapps\Thingworx\WEB-INF\extensions -Xms4G -Xmx16G -Djava.timezone=UTC -Dshutdown.port=8005 -Dhttp.port=8080 -Dhttps.port=8443 -Dcertificate.file=..\openssl\thingworx.crt -Dkey.file=..\openssl\thingworx.key
