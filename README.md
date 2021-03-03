@@ -16,7 +16,9 @@ This artifact allows to install ThingWorx with all related dependencies:
 - as a Windows service (you can start and stop from the Windows Services panel)
 - as a command prompt window (you can start by running a PowerShell script and stop with Control-C)
 
-First of all you have to bring your own license and ThingWorx package: copy the license and the `Thingworx.war` files into the `staging` folder.
+First of all you have to bring your own license and ThingWorx package: copy the license and the `Thingworx.war` files into the `staging` folder:
+- `Thingworx.war`: bring your own ThingWorx
+- License file: bring your own license
 
 Then update the scripts (as described below) to possibly update the versions of software dependencies and to change other minor details:
 - `thingworx-provision.ps1`
@@ -39,10 +41,6 @@ Edit `thingworx-provision.ps1`:
 - Update the Tomcat9 version to the [latest version](https://tomcat.apache.org/download-90.cgi)
 - Update the OpenSSL version to the [latest version](http://wiki.overbyte.eu/wiki/index.php/ICS_Download#Download_OpenSSL_Binaries_.28required_for_SSL-enabled_components.29)
 - Tailor the SSL CONFIGURATION to your environemnt
-
-Stage files in the staging folder
-- `Thingworx.war`: bring your own ThingWorx
-- License file: bring your own license
 
 
 # How to update the service installer and removal scripts
