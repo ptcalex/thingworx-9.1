@@ -41,7 +41,7 @@ $openssl_url = "http://wiki.overbyte.eu/arch/openssl-${openssl_version}-win64.zi
 # Download Java
 $jdk_exists = Test-Path -Path "jdk*" -PathType Container
 if ($jdk_exists -eq $False) {
-  Write-Output "Downloading and installing Java..."
+  Write-Output "Downloading Java..."
   Invoke-WebRequest -Uri "${jdk_url}" -OutFile "jdk.zip"
   Expand-Archive "jdk.zip" -DestinationPath .
   Remove-Item "jdk.zip"
@@ -67,7 +67,7 @@ $tomcat_folder = Resolve-Path -Path (Get-ChildItem -Path . -Filter "apache-tomca
 # Download OpenSSL
 $openssl_exists = Test-Path -Path "openssl*" -PathType Container
 if ($openssl_exists -eq $False) {
-  Write-Output "Downloading and installing OpenSSL..."
+  Write-Output "Downloading OpenSSL..."
   Invoke-WebRequest -Uri "${openssl_url}" -OutFile "openssl.zip"
   Expand-Archive "openssl.zip" -DestinationPath "openssl"
   Remove-Item "openssl.zip"
