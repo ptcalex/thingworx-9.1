@@ -28,7 +28,7 @@ Then you have to change the default passwords in `thingworx\platform-settings.js
 Edit `thingworx-provision.ps1`:
 - Update the Tomcat9 version to the [latest version](https://tomcat.apache.org/download-90.cgi)
 - Update the OpenSSL version to the [latest version](http://wiki.overbyte.eu/wiki/index.php/ICS_Download#Download_OpenSSL_Binaries_.28required_for_SSL-enabled_components.29)
-- Tailor the SSL CONFIGURATION to your environemnt by setting the host name, a 2-letter country code, the name of your organization and the certificate validity in days.
+- Tailor the SSL CONFIGURATION by setting the ThingWorx host name, a 2-letter country code, the name of your organization, and the certificate validity (in days).
 
 Stage the following files and folders in the `staging` folder:
 - `Thingworx.war` file: bring your own ThingWorx
