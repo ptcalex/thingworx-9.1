@@ -40,7 +40,7 @@ $openssl_url = "http://wiki.overbyte.eu/arch/openssl-${openssl_version}-win64.zi
 
 # Download Java
 $jdk_exists = Test-Path -Path "jdk*" -PathType Container
-if ($jdk_exist -eq $False) {
+if ($jdk_exists -eq $False) {
   Write-Output "Downloading and installing Java..."
   Invoke-WebRequest -Uri "${jdk_url}" -OutFile "jdk.zip"
   Expand-Archive "jdk.zip" -DestinationPath .
