@@ -40,9 +40,11 @@ Stage the following files and folders in the `staging` folder:
 Edit `service-install.ps1` and update the Apache Tomcat ports in the TAILORING section.
 
 
-# Change the default passwords
+# Tailor the platform settings file
 
-Edit `platform-settings.json` to change the default passwords.
+Edit `platform-settings.json`:
+- change the default passwords
+- change DB connection details
 
 
 # Run the provisioning script
