@@ -1,12 +1,12 @@
-### DEFINE ENVIRONMENT ###
+### ENVIRONMENT DEFINITION ###
 
 $java_home = "$pwd\jdk11.0.10_9"
 $tomcat_version = "9.0.43"
 $tomcat_shutdown_port = 8005
 $tomcat_http_port = 8080
 $tomcat_https_port = 8443
-$tomcat_certificate_file = "$pwd\openssl\thingworx.crt"
-$tomcat_key_file = "$pwd\openssl\thingworx.key"
+$tomcat_certificate_file = "$pwd\openssl\thingworx.crt" # no need to change
+$tomcat_key_file = "$pwd\openssl\thingworx.key" # no need to change
 
 
 #### NO NEED TO CHANGE BELOW ###

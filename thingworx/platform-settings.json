@@ -29,11 +29,19 @@
     },
 
     "PersistenceProviderPackageConfigs": {
+        "PostgresPersistenceProviderPackage": {
+            "ConnectionInformation": {
+              "jdbcUrl": "jdbc:postgresql://localhost:5412/t1",
+              "username": "twadmin",
+              "password": "change-me-please"
+            }
+        },
+
         "H2PersistenceProviderPackage": {
             "ConnectionInformation": {
                 "username": "twadmin",
                 "password": "change-me-please"
-          }
-	    }
+            }
+	      }
     }
 }

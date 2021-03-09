@@ -1,13 +1,13 @@
-### CHECK LATEST VERSIONS OF TOMCAT AND OPENSSL ###
+### PROVIDE LATEST VERSIONS OF APACHE TOMCAT AND OPENSSL ###
  
 $tomcat9_version = "9.0.43"
 $openssl_version = "1.1.1j"
 
 
-### SSL CONFIGURATION ###
+### PROVIDE SSL CONFIGURATION ###
  
 $ssl_host = "thingworx" # host name of ThingWorx server
-$ssl_country = "IT" # 2-letter country code
+$ssl_country = "your-country" # 2-letter country code
 $ssl_org = "your-organization"
 $ssl_days = 365 # days of validity of certificate
 
@@ -15,8 +15,13 @@ $ssl_days = 365 # days of validity of certificate
 ### NO NEED TO CHANGE BELOW ###
 
 # Copy files from the staging folder
-Copy-Item staging\*.war tomcat\webapps -force
-Copy-Item staging\*.bin thingworx -force
+Copy-Item -Path staging\*.war -Destination tomcat\webapps -Force
+Copy-Item -Path staging\*.bin -Destination thingworx -Force
+Copy-Item -Path staging\install -Destination thingworx -Force -Recurse
+$pgInstallExists = Test-Path -Path thingworx\install\pg-install.bat -PathType Leaf
+if ($pgInstallExists -eq $False) {
+  Copy-Item -Path staging\etc\pg-install.bat -Destination thingworx\install -Force
+}
 
 
 # Latest version of Amazon Corretto 11
@@ -34,48 +39,52 @@ $tomcat9_url="https://downloads.apache.org/tomcat/tomcat-9/v${tomcat9_version}/b
 $openssl_url = "http://wiki.overbyte.eu/arch/openssl-${openssl_version}-win64.zip"
 
 
-# Download Java 11
+# Download Java
 $jdkCount = (Get-ChildItem -Path . -Filter "jdk*").Length
 if ($jdkCount -eq 0) {
-  Write-Output "Downloading and installing JDK..."
+  Write-Output "Downloading and installing Java..."
   Invoke-WebRequest -Uri $jdk_url -OutFile jdk.zip
   Expand-Archive jdk.zip -DestinationPath .
   Remove-Item jdk.zip
 } else {
-  Write-Output "JDK already installed, skipping..."
+  Write-Output "Java already installed, skipping..."
 }
 $jdk_folder = Resolve-Path -Path (Get-ChildItem -Path . -Filter "jdk*").Name
 $jdk_base_folder = (Get-ChildItem -Path . -Filter "jdk*").Name
 
 
-# Download Tomcat9
-$tomcatCount = (Get-ChildItem -Path . -Filter "apache-tomcat-*").Length
-if ($tomcatCount -eq 0) {
-  Write-Output "Downloading and installing Tomcat..."
+# Download Apache Tomcat
+$tomcatExists = Test-Path -Path "apache-tomcat-*" -PathType Container
+if ($tomcatExists -eq $False) {
+  Write-Output "Downloading Apache Tomcat..."
   Invoke-WebRequest -Uri $tomcat9_url -OutFile tomcat.zip
   Expand-Archive tomcat.zip -DestinationPath .
   Remove-Item tomcat.zip
 } else {
-  Write-Output "Tomcat already installed, skipping..."
+  Write-Output "Apache Tomcat already downloaded, skipping..."
 }
-$tomcat_folder = Resolve-Path -Path (Get-ChildItem -Path . -Filter "apache*").Name
+$tomcat_folder = Resolve-Path -Path (Get-ChildItem -Path . -Filter "apache-tomcat-*").Name
 
 
 # Download OpenSSL
-$opensslCount = (Get-ChildItem -Path . -Filter "openssl*").Length
-if ($opensslCount -eq 0) {
+$opensslExists = Test-Path -Path "openssl*" -PathType Container
+if ($opensslExists -eq $False) {
   Write-Output "Downloading and installing OpenSSL..."
   Invoke-WebRequest -Uri $openssl_url -OutFile openssl.zip #
   Expand-Archive openssl.zip -DestinationPath openssl #
   Remove-Item openssl.zip #
-  Write-Output "Verify the authenticity of $pwd\openssl\openssl.exe by ensuring it is digitally signed by François PIETTE, then press ENTER to continue"
+  Write-Output "Verify the authenticity of $pwd\openssl\openssl.exe by ensuring it is digitally signed!"
+  Write-Output "Then press ENTER to continue..."
   Pause
+
+  # Deploy OpenSSL configuration file
+  Copy-Item -Path staging\etc\openssl.cnf -Destination openssl -Force
 
   # Create key and certificate
   Push-Location openssl
   & ".\openssl.exe" genpkey -algorithm RSA -out thingworx.key -pkeyopt rsa_keygen_bits:2048
   & ".\openssl.exe" rsa -pubout -in thingworx.key -out thingworx.pub
-  & ".\openssl.exe" req -x509 -key thingworx.key -out thingworx.crt -days $ssl_days -subj "/C=$ssl_country/O=$ssl_org/CN=$ssl_host" -addext "subjectAltName=DNS:$ssl_host"
+  & ".\openssl.exe" req -x509 -key thingworx.key -out thingworx.crt -days $ssl_days -subj "/C=$ssl_country/O=$ssl_org/CN=$ssl_host" -addext "subjectAltName=DNS:$ssl_host" -config openssl.cnf
   Pop-Location
 } else {
   Write-Output "OpenSSL already installed, skipping..."
@@ -95,23 +104,5 @@ popd
 "@ | Out-File console-start-thingworx.bat
 
 Write-Output "console-start-thingworx.bat created."
-
-
-# Generate PowerShell script to run ThingWorx from a PowerShell console
-$thingWorx_ps1 = @"
-`$catalina_home = "`$pwd\apache-tomcat-$tomcat9_version"
-`$thingworx_platform_settings = "`$pwd\thingworx"
-
-`$Env:JAVA_HOME = "`$pwd\$jdk_base_folder"
-`$Env:CATALINA_HOME = "`$catalina_home"
-`$Env:CATALINA_BASE = "`$pwd\tomcat"
-`$Env:THINGWORX_PLATFORM_SETTINGS = "`$thingworx_platform_settings"
-
-Push-Location `$thingworx_platform_settings
-& `$catalina_home\bin\catalina.bat run
-Pop-Location
-"@ | Out-File console-start-thingworx.ps1
-
-Write-Output "console-start-thingworx.ps1 created."
 
 Write-Output "DONE!"
