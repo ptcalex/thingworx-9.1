@@ -9,7 +9,7 @@
         },
 
         "AdministratorUserSettings": {
-            "InitialPassword": "change-me-please"
+            "InitialPassword": "change-me-please-min-14-characters"
         },
 
         "ContentTypeSettings": {

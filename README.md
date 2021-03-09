@@ -35,9 +35,14 @@ Stage the following files and folders in the `staging` folder:
 - `install` folder: the DB scripts part of ThingWorx installation
 
 
-# Tailor the service install and remove scripts
+# Tailor the service install script
 
 Edit `service-install.ps1` and update the Apache Tomcat ports in the TAILORING section.
+
+
+# Change the default passwords
+
+Edit `platform-settings.json` to change the default passwords.
 
 
 # Run the provisioning script
