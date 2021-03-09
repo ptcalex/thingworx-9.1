@@ -1,26 +1,25 @@
-### PROVIDE LATEST VERSIONS OF APACHE TOMCAT AND OPENSSL ###
- 
+### TAILORING SECTION ###
+
+# Tailor versions of software dependencies
 $tomcat9_version = "9.0.43"
 $openssl_version = "1.1.1j"
 
-
-### PROVIDE SSL CONFIGURATION ###
- 
+# Tailor SSL configuration 
 $ssl_host = "thingworx" # host name of ThingWorx server
-$ssl_country = "your-country" # 2-letter country code
-$ssl_org = "your-organization"
+$ssl_country = "IT" # 2-letter country code
+$ssl_org = "PTC"
 $ssl_days = 365 # days of validity of certificate
 
 
-### NO NEED TO CHANGE BELOW ###
+
+### NO NEED TO CHANGE BELOW THIS LINE ###
 
 # Copy files from the staging folder
-Copy-Item -Path staging\*.war -Destination tomcat\webapps -Force
-Copy-Item -Path staging\*.bin -Destination thingworx -Force
-Copy-Item -Path staging\install -Destination thingworx -Force -Recurse
-$pgInstallExists = Test-Path -Path thingworx\install\pg-install.bat -PathType Leaf
-if ($pgInstallExists -eq $False) {
-  Copy-Item -Path staging\etc\pg-install.bat -Destination thingworx\install -Force
+Copy-Item -Path "staging\*.war" -Destination "tomcat\webapps" -Force
+Copy-Item -Path "staging\install" -Destination "thingworx" -Force -Recurse
+$pg_install_exists = Test-Path -Path "thingworx\install\pg-install.bat" -PathType Leaf
+if ($pg_install_exists -eq $False) {
+  Copy-Item -Path "staging\etc\pg-install.bat" -Destination "thingworx\install" -Force
 }
 
 
@@ -40,48 +39,46 @@ $openssl_url = "http://wiki.overbyte.eu/arch/openssl-${openssl_version}-win64.zi
 
 
 # Download Java
-$jdkCount = (Get-ChildItem -Path . -Filter "jdk*").Length
-if ($jdkCount -eq 0) {
+$jdk_exists = Test-Path -Path "jdk*" -PathType Container
+if ($jdk_exist -eq $False) {
   Write-Output "Downloading and installing Java..."
-  Invoke-WebRequest -Uri $jdk_url -OutFile jdk.zip
-  Expand-Archive jdk.zip -DestinationPath .
-  Remove-Item jdk.zip
+  Invoke-WebRequest -Uri "${jdk_url}" -OutFile "jdk.zip"
+  Expand-Archive "jdk.zip" -DestinationPath .
+  Remove-Item "jdk.zip"
 } else {
   Write-Output "Java already installed, skipping..."
 }
-$jdk_folder = Resolve-Path -Path (Get-ChildItem -Path . -Filter "jdk*").Name
-$jdk_base_folder = (Get-ChildItem -Path . -Filter "jdk*").Name
+$jdk_folder = Resolve-Path -Path (Get-ChildItem -Path . -Filter "jdk*")[0].Name
 
 
 # Download Apache Tomcat
-$tomcatExists = Test-Path -Path "apache-tomcat-*" -PathType Container
-if ($tomcatExists -eq $False) {
+$tomcat_exists = Test-Path -Path "apache-tomcat-*" -PathType Container
+if ($tomcat_exists -eq $False) {
   Write-Output "Downloading Apache Tomcat..."
-  Invoke-WebRequest -Uri $tomcat9_url -OutFile tomcat.zip
-  Expand-Archive tomcat.zip -DestinationPath .
-  Remove-Item tomcat.zip
+  Invoke-WebRequest -Uri "${tomcat9_url}" -OutFile "tomcat.zip"
+  Expand-Archive "tomcat.zip" -DestinationPath .
+  Remove-Item "tomcat.zip"
 } else {
   Write-Output "Apache Tomcat already downloaded, skipping..."
 }
-$tomcat_folder = Resolve-Path -Path (Get-ChildItem -Path . -Filter "apache-tomcat-*").Name
+$tomcat_folder = Resolve-Path -Path (Get-ChildItem -Path . -Filter "apache-tomcat-*")[0].Name
 
 
 # Download OpenSSL
-$opensslExists = Test-Path -Path "openssl*" -PathType Container
-if ($opensslExists -eq $False) {
+$openssl_exists = Test-Path -Path "openssl*" -PathType Container
+if ($openssl_exists -eq $False) {
   Write-Output "Downloading and installing OpenSSL..."
-  Invoke-WebRequest -Uri $openssl_url -OutFile openssl.zip #
-  Expand-Archive openssl.zip -DestinationPath openssl #
-  Remove-Item openssl.zip #
-  Write-Output "Verify the authenticity of $pwd\openssl\openssl.exe by ensuring it is digitally signed!"
-  Write-Output "Then press ENTER to continue..."
+  Invoke-WebRequest -Uri "${openssl_url}" -OutFile "openssl.zip"
+  Expand-Archive "openssl.zip" -DestinationPath "openssl"
+  Remove-Item "openssl.zip"
+  Write-Output "You must verify the Digital Signature of $pwd\openssl\openssl.exe..."
   Pause
 
   # Deploy OpenSSL configuration file
-  Copy-Item -Path staging\etc\openssl.cnf -Destination openssl -Force
+  Copy-Item -Path "staging\etc\openssl.cnf" -Destination "openssl" -Force
 
   # Create key and certificate
-  Push-Location openssl
+  Push-Location "openssl"
   & ".\openssl.exe" genpkey -algorithm RSA -out thingworx.key -pkeyopt rsa_keygen_bits:2048
   & ".\openssl.exe" rsa -pubout -in thingworx.key -out thingworx.pub
   & ".\openssl.exe" req -x509 -key thingworx.key -out thingworx.crt -days $ssl_days -subj "/C=$ssl_country/O=$ssl_org/CN=$ssl_host" -addext "subjectAltName=DNS:$ssl_host" -config openssl.cnf

@@ -12,16 +12,17 @@ This artifact allows to install ThingWorx with all related dependencies:
 - as a Command Prompt application (you can start ThingWorx by running a batch file and stop it with Control-C)
 - as a Windows service (you can start and stop ThingWorx from the Windows Services panel)
 
-First of all you have to update the scripts described below (you will find details in the next sections):
+First of all you have to tailor the scripts described below (details in the next sections):
 - `thingworx-provision.ps1`
 - `service-install.ps1`
 - `service-remove.ps1`
-Then you have to change the default passwords provided in the `platform-settings.json` file.
 
-Before running the scripts you have to tailor them to your environment. They include a section that provides variable that you can configure.
+Then you have to change the default passwords in `thingworx\platform-settings.json`.
+
+Before running the scripts you have to tailor them to your environment. They include a section that contains the variables that you can tailor.
 
 
-# Update the provisioning script
+# Tailor the provisioning script
 
 Edit `thingworx-provision.ps1`:
 - Update the Tomcat9 version to the [latest version](https://tomcat.apache.org/download-90.cgi)
@@ -30,10 +31,10 @@ Edit `thingworx-provision.ps1`:
 
 Stage files in the staging folder:
 - `Thingworx.war`: bring your own ThingWorx
-- DB installation scripts: the `install` folder that is part of the ThingWorx installation files
+- DB installation scripts: the `install` folder that is part of ThingWorx installation
 
 
-# Update the service installer and removal scripts
+# Tailor the service install and remove scripts
 
 Edit `service-install.ps1`:
 - Update the ENVIRONMENT DEFINITION section (Java home, Tomcat versions, etc.)
@@ -43,20 +44,27 @@ Edit `service-remove.ps1`:
 - Update Apache Tomcat version
 
 
-# Update the DB scripts launcher
+# Run the provisioning script
 
-You need to do this if the DB is not H2.
-The DB scripts launcher the batch file `pg-install.bat` located in `thingworx\install`.
+Open an Administrative PowerShell console and run `.\thingworx-provision.ps1`.
 
 
-# Run the scripts
+# Tailor and run the PostgreSQL DB script
 
-Open an Administrative PowerShell console and run:
-- `thingworx-provision.ps1`
-- `service-install.ps1` if you intend to install ThingWor as a Windows service
+The DB script is: `thingworx\install\pg-install.bat`.
+The settings to tailor are in the top section.
+After tailoring, but before running the script, make sure that the DB client is in the PATH (for PostgreSQL this is the PostgreSQL `bin` folder).
+Run the script in a Command Prompt window, or just double-click on it in the Windows Explorer.
 
 
 # Start ThingWorx
 
-Get the license ID from Application.log, request a license from [PTC License Support](https://support.ptc.com/apps/licensePortal/auth/ssl/index), rename it to `license_capability_response.bin` and copy it to the `thingworx` folder.
+Start ThingWorx without a license by running the generated `console-start-thingworx.bat` batch file.
+
+Get the license ID from the generated file `thingworx\licenseRequestFile.txt` or from `Application.log`, request a license from [PTC License Support](https://support.ptc.com/apps/licensePortal/auth/ssl/index), rename it to `license_capability_response.bin` and copy the file to the `thingworx` folder.
+
+
+# Install ThingWorx as a Windows service
+
+Run `.\service-install.ps1` if you intend to install ThingWorx as a Windows service.
 
