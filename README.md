@@ -1,16 +1,16 @@
 # What is this about?
 
-I am providing this Windows PowerShell-based artifact to simplify ThingWorx 9.1 installations on Windows using the H2 or PostgreSQL databases.
+I am providing you this Windows PowerShell-based artifact to simplify ThingWorx 9.1 installations on Windows.
 The result is intended as a development environment.
 
-This artifact neither includes a ThingWorx license (which you have to provide) nor the ThingWorx archive (which you have to download from [support.ptc.com](https://support.ptc.com/appserver/auth/it/esd/product.jsp?prodFamily=TWX)). It also does not include the DB scripts that are provided with a ThingWorx installation.
+This artifact neither includes a ThingWorx license (which you have to provide) nor the ThingWorx archive (which you have to download from [support.ptc.com](https://support.ptc.com/appserver/auth/it/esd/product.jsp?prodFamily=TWX)). It also does not include the DB scripts available in the ThingWorx installation and that you have to provide.
 
 
 # How to use this artifact
 
 This artifact allows to install ThingWorx with all related dependencies:
+- as a Command Prompt application (you can start by running a batch file and stop with Control-C)
 - as a Windows service (you can start and stop from the Windows Services panel)
-- as a command prompt window (you can start by running a PowerShell script and stop with Control-C)
 
 First of all you have to update the two scripts (as described below) to fine tune the versions of software dependencies and other minor details:
 - `thingworx-provision.ps1`
